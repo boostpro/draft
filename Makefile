@@ -11,10 +11,10 @@
 #   texlive-fonts-extra
 
 FIGURES = $(patsubst %.dot,%.pdf,$(wildcard source/*.dot))
+SOURCES = $(wildcard source/*.tex)
 
-all: $(FIGURES) grammar xrefs document
-	echo Draft standard compiled
-
+all: std.pdf
+
 %.pdf: %.dot
 	dot -o $@ -Tpdf $<
 
@@ -24,12 +24,37 @@ grammar:
 xrefs:
 	(cd source ; sh ../tools/makexref)
 
-document:
-	(cd source ; pdflatex std; pdflatex std; pdflatex std)
+std.pdf: $(SOURCES) $(FIGURES) grammar xrefs
+	(cd source ; pdflatex std)
+	(cd source ; pdflatex std)
+	(cd source ; pdflatex std)
 	(cd source ; makeindex generalindex)
 	(cd source ; makeindex libraryindex)
 	(cd source ; makeindex grammarindex)
 	(cd source ; makeindex impldefindex)
-	(cd source ; pdflatex std; pdflatex std)
+	(cd source ; pdflatex std)
+	(cd source ; pdflatex std)
+	(cd source ; pdflatex std)
+	mv source/std.pdf $@
+	@echo Draft standard compiled
+
+convert2texi: convert2texi.cpp
+	g++ -g2 -o $@ $<
+
+source/std.texi: $(SOURCES) convert2texi
+	(cd source; ../convert2texi std.tex > ../$@)
+	perl -i -pe 's/``\@quotation''/``\@\@quotation''/g;' $@
+	perl -i -pe 's/``\@end quotation''/``\@\@end quotation''/g;' $@
+	texinfo-update $@
+
+std.info: source/std.texi
+	makeinfo -o $@ $<
+	@echo Draft standard converted to TeXinfo
+
+info: std.info
+
+clean:
+	rm -f convert2texi std.info
+	(cd source; rm -f *.aux *.texi)
 
 ### Makefile ends here
