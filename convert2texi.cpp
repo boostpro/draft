@@ -180,7 +180,6 @@ public:
         else if (c == '{' || c == '}') {
           next.kind = token::TOK_LITERAL;
           buf << c;
-          c = getchar(input);
           break;
         }
         else {
@@ -431,9 +430,8 @@ public:
           else if (tok.brace_args.front() == "ncbnftab")
             out << "@smallexample";
           else if (tok.brace_args.front() == "tokentable" ||
-                   tok.brace_args.front() == "floattable") {
+                   tok.brace_args.front() == "floattable")
             out << "@multitable";
-          }
           else
             report_unrecognized(path, tok.linenum, "begin",
                                 tok.brace_args.front());
@@ -504,8 +502,7 @@ public:
         else if (tok.text == "opt") {
           out << "[opt]";
         }
-        else
-        {
+        else {
           report_unrecognized(path, tok.linenum, tok.text);
         }
         break;
