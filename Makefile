@@ -48,7 +48,7 @@ source/std.texi: $(SOURCES) convert2texi
 	texinfo-update $@
 
 std.info: source/std.texi
-	makeinfo --error-limit=10000 -o $@ $<
+	makeinfo --error-limit=10000 --force -o $@ $<
 	@echo Draft standard converted to TeXinfo
 
 info: std.info
