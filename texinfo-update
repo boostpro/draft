@@ -9,5 +9,6 @@ exec emacs -Q -nw -batch -l texinfo \
           (with-current-buffer (find-file-noselect file)
             (texinfo-every-node-update)
             (texinfo-all-menus-update)
+            (texinfo-every-node-update)
             (save-buffer)))
         command-line-args-left))' "$@"
