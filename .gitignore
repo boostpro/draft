@@ -10,5 +10,5 @@ std.pdf
 *.ind
 *.tmp
 /convert2texi
-/std.info
+*.info*
 /source/std.texi
