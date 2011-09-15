@@ -42,13 +42,13 @@ convert2texi: convert2texi.cpp
 	g++ -g2 -o $@ $<
 
 source/std.texi: $(SOURCES) convert2texi
-	(cd source; ../convert2texi std.tex > ../$@)
+	./convert2texi -I source source/std.tex > $@
 	perl -i -pe 's/``\@quotation''/``\@\@quotation''/g;' $@
 	perl -i -pe 's/``\@end quotation''/``\@\@end quotation''/g;' $@
 	texinfo-update $@
 
 std.info: source/std.texi
-	makeinfo -o $@ $<
+	makeinfo --error-limit=10000 -o $@ $<
 	@echo Draft standard converted to TeXinfo
 
 info: std.info

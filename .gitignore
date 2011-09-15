@@ -9,3 +9,6 @@ std.pdf
 *.ilg
 *.ind
 *.tmp
+/convert2texi
+/std.info
+/source/std.texi
