@@ -227,9 +227,13 @@ public:
           pos = skip_whitespace(input, c);
         }
 
-        input.seekg(pos, std::ios::beg);
-        c = save;
-        linenum = linenum_save;
+        next.text = buf.str();
+
+        if (next.text != "pnum") {
+          input.seekg(pos, std::ios::beg);
+          c = save;
+          linenum = linenum_save;
+        }
         break;
       }
 
@@ -418,6 +422,7 @@ public:
           pnum = 1;
         }
         else if (tok.text == "rSec3") {
+          out << "@node\n";
           out << "@subsubsection "
               << process_text(tok.brace_args.front(), path) << "\n";
           out << "@anchor{" << tok.bracket_arg << "}";
@@ -430,7 +435,7 @@ public:
           pnum = 1;
         }
         else if (tok.text == "pnum") {
-          out << pnum++ << ".  ";
+          out << "@noindent " << pnum++ << ".  ";
         }
         else if (tok.text == "include") {
           std::string name = tok.brace_args.front();
