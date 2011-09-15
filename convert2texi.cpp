@@ -171,7 +171,17 @@ public:
           c = getchar(input);
           break;
         }
-        else if (c == '&') {
+        else if (c == '-') {
+          getchar(input);
+          return get_token();
+        }
+        else if (c == '&' ||
+                 c == ',' ||
+                 c == '>' ||
+                 c == '#' ||
+                 c == '%' ||
+                 c == '^' ||
+                 c == '=') {
           next.kind = token::TOK_TEXT;
           buf << c;
           c = getchar(input);
@@ -229,7 +239,7 @@ public:
           buf << c;
           c = getchar(input);
         }
-        while (! input.eof() && c != '$');
+        while (! input.eof() && c != '$' && c != '\n');
         break;
 
       case '%':
@@ -320,6 +330,17 @@ class texinfo_converter
 public:
   texinfo_converter() : pnum(1) {}
 
+  std::string process_text(const std::string& text,
+                           const std::string& path = "") {
+    std::istringstream stream(text);
+    std::ostringstream converted;
+
+    texinfo_converter converter;
+    converter.convert(stream, converted, path);
+
+    return converted.str();
+  }
+
   void convert(std::istream& in, std::ostream& out,
                const std::string& path = "")
   {
@@ -353,7 +374,16 @@ public:
 
       case tokenizer::token::TOK_DIRECTIVE:
         if (tok.text == "documentclass") {
-          out << "\\input texinfo  @c -*-texinfo-*-";
+          out << "\\input texinfo  @c -*-texinfo-*-\n";
+          out << "@setfilename std.info\n";
+          out << "@settitle Title\n";
+          out << "@contents\n";
+          out << "@ifnottex\n";
+          out << "@node Top,  , (dir), (dir)\n";
+          out << "@top Overview\n\n";
+          out << "@insertcopying\n";
+          out << "@end ifnottex\n";
+
         }
         else if (tok.text == "usepackage" ||
                  tok.text == "input" ||
@@ -368,24 +398,34 @@ public:
         }
         else if (tok.text == "rSec0") {
           out << "@node\n";
-          out << "@chapter " << tok.brace_args.front() << "\n";
+          out << "@chapter "
+              << process_text(tok.brace_args.front(), path) << "\n";
           out << "@anchor{" << tok.bracket_arg << "}";
           pnum = 1;
         }
         else if (tok.text == "rSec1") {
           out << "@node\n";
-          out << "@section " << tok.brace_args.front() << "\n";
+          out << "@section "
+              << process_text(tok.brace_args.front(), path) << "\n";
           out << "@anchor{" << tok.bracket_arg << "}";
           pnum = 1;
         }
         else if (tok.text == "rSec2") {
           out << "@node\n";
-          out << "@subsection " << tok.brace_args.front() << "\n";
+          out << "@subsection "
+              << process_text(tok.brace_args.front(), path) << "\n";
           out << "@anchor{" << tok.bracket_arg << "}";
           pnum = 1;
         }
         else if (tok.text == "rSec3") {
-          out << "@subsubsection " << tok.brace_args.front() << "\n";
+          out << "@subsubsection "
+              << process_text(tok.brace_args.front(), path) << "\n";
+          out << "@anchor{" << tok.bracket_arg << "}";
+          pnum = 1;
+        }
+        else if (tok.text == "rSec4") {
+          out << "@subsubheading "
+              << process_text(tok.brace_args.front(), path) << "\n";
           out << "@anchor{" << tok.bracket_arg << "}";
           pnum = 1;
         }
@@ -482,16 +522,11 @@ public:
         }
         else if (tok.text == "footnote" ||
                  tok.text == "terminal") {
-          std::istringstream text(tok.brace_args.front());
-          std::ostringstream converted;
-
-          texinfo_converter converter;
-          converter.convert(text, converted, path);
-
           if (tok.text == "footnote")
-            out << "@footnote{" << converted.str() << "}";
+            out << "@footnote{"
+                << process_text(tok.brace_args.front(), path) << "}";
           else
-            out << converted.str();
+            out << process_text(tok.brace_args.front(), path);
         }
         else if (tok.text == "terminal") {
           out << tok.brace_args.front();
