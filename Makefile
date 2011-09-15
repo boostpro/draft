@@ -45,7 +45,7 @@ source/std.texi: $(SOURCES) convert2texi
 	./convert2texi -I source source/std.tex > $@
 	perl -i -pe 's/``\@quotation''/``\@\@quotation''/g;' $@
 	perl -i -pe 's/``\@end quotation''/``\@\@end quotation''/g;' $@
-	texinfo-update $@
+	./texinfo-update $@
 
 std.info: source/std.texi
 	makeinfo --error-limit=10000 --force -o $@ $<
@@ -54,7 +54,7 @@ std.info: source/std.texi
 info: std.info
 
 clean:
-	rm -f convert2texi std.info
+	rm -f convert2texi std.info*
 	(cd source; rm -f *.aux *.texi)
 
 ### Makefile ends here
