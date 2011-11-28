@@ -402,34 +402,34 @@ public:
         }
         else if (tok.text == "rSec0") {
           out << "@node\n";
-          out << "@chapter "
+          out << "@chapter [" << tok.bracket_arg << "] "
               << process_text(tok.brace_args.front(), path) << "\n";
           out << "@anchor{" << tok.bracket_arg << "}";
           pnum = 1;
         }
         else if (tok.text == "rSec1") {
           out << "@node\n";
-          out << "@section "
+          out << "@section [" << tok.bracket_arg << "] "
               << process_text(tok.brace_args.front(), path) << "\n";
           out << "@anchor{" << tok.bracket_arg << "}";
           pnum = 1;
         }
         else if (tok.text == "rSec2") {
           out << "@node\n";
-          out << "@subsection "
+          out << "@subsection [" << tok.bracket_arg << "] "
               << process_text(tok.brace_args.front(), path) << "\n";
           out << "@anchor{" << tok.bracket_arg << "}";
           pnum = 1;
         }
         else if (tok.text == "rSec3") {
           out << "@node\n";
-          out << "@subsubsection "
+          out << "@subsubsection [" << tok.bracket_arg << "] "
               << process_text(tok.brace_args.front(), path) << "\n";
           out << "@anchor{" << tok.bracket_arg << "}";
           pnum = 1;
         }
         else if (tok.text == "rSec4") {
-          out << "@subsubheading "
+          out << "@subsubheading [" << tok.bracket_arg << "] "
               << process_text(tok.brace_args.front(), path) << "\n";
           out << "@anchor{" << tok.bracket_arg << "}";
           pnum = 1;
