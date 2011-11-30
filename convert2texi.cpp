@@ -457,6 +457,9 @@ public:
             }
           }
         }
+        else if (tok.text == "defn") {
+          out << "@dfn{" << tok.brace_args.front() << "}";
+        }
         else if (tok.text == "tcode") {
           out << "@code{" << tok.brace_args.front() << "}";
         }
